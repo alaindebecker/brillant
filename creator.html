@@ -1,0 +1,282 @@
+<meta class="export" charset="utf-8">
+
+<style class="export">
+	* { margin: 0; padding: 0; font-family: sans-serif; }
+	ul[contenteditable="true"] { border: 4px groove; }
+	li:first-child { background: aliceblue; border: 1px solid white; font-weight: bold; padding: .5em; }
+	li { padding: .3em; padding-left: 1em; }
+</style>
+
+
+<style class="export">
+	main {	height: calc(100vh - 15vh); width: calc(65vh - 15vh);   
+			border: solid black; border-width: 7.5vh 2vh 7.5vh; border-radius: 2vh;
+			font-size: 2.5vh; overflow: auto; }
+	li:before { content: '\2610\a0'; }
+	li[active]:before { content: '\2611\a0'; } 
+	li:first-child:before { content: ''; }
+	li:first-child[onclick="collapse(this)"] ~ * { display: inherit; }
+	li:first-child[onclick="expand(this)"] ~ * { display: none; }
+	li:first-child[onclick="expand(this)"] ~ *[active] { display: block; }
+</style>
+
+
+<style>
+	main {	position: fixed; right: 0; top: 0; }
+	a[download] { background: lightgrey; color: black; font-weight: bold; text-decoration: none; 
+		position: relative; top: 10px; left: 7px; border: 7px solid lightgrey; border-radius: 2px; }
+</style>
+
+
+<script class="export">
+onload = function (){
+	if(localStorage.getItem('checklist'))
+		document.body.innerHTML = localStorage.getItem('checklist');
+	for(var x of document.querySelectorAll('[onclick="collapse(this)"]'))
+		collapse(x);
+}
+save = function(){
+	localStorage.setItem('checklist', document.body.innerHTML);
+}
+activate = function (item){
+	if(item.getAttribute('active'))
+		item.removeAttribute('active');
+	else
+		item.setAttribute('active', true);
+	save();
+}
+expand = function (group){
+	group.setAttribute("onclick", "collapse(this)");
+}
+collapse = function (group){
+	if(group.getAttribute("contenteditable")!="true")
+		group.setAttribute("onclick", "expand(this)");
+}
+edit = function (event){
+	event.preventDefault();
+	var x = event.target;
+	var g = getGroup(x);
+	if(g.getAttribute("contenteditable")!="true"){
+		g.setAttribute("contenteditable", true);
+		g.focus();
+		expand(x);
+	}else{
+		g.removeAttribute("contenteditable");
+		collapse(x);
+		save();
+	}
+}
+getGroup = function (x){
+	while(x.tagName && x.tagName!='UL')
+		x = x.parentElement;
+	return x;
+}
+</script>
+
+
+<script>
+onload = function() {
+	compile();
+}
+compile = function(){
+	var prog = document.getElementById("prog").value;
+	var body = '\n';
+	for(var line of prog.split(/\r?\n/)){
+		if(regex = line.match(/^(\s*)(.*)\s*$/)){
+			var text = regex[2].replace(/<script>.*<\/script>/g, '' );
+			if(!regex[1]){
+				if(body!='')
+					body += '\t</ul>\n';
+				if(text)
+					body += '\t<ul oncontextmenu="edit(event)">\n\t<li onclick="expand(this)">'+text+'</li>\n';
+			} else
+				body += '\t\t<li onclick="activate(this)">'+text+'</li>\n';
+		}
+	}
+	document.querySelector('main').innerHTML = body;
+}
+html = function (link){
+	var html = '';
+	for(var x of document.querySelectorAll('.export'))
+		html += x.outerHTML+'\n';
+	link.href = 'data:text/html;charset=utf-8,'+encodeURIComponent(html);
+	if(document.querySelector('#name').value)
+		link.download = document.querySelector('#name').value+'.html';
+}
+</script>
+
+
+<body>
+<b>Name: </b><input id="name" value="Liste de course"><br>
+<textarea id="prog" onkeyup="compile()" cols="40" rows="20">
+Crémerie
+  œufs
+  beurre
+  crème fraiche
+  fromage
+  gruyère râpé
+  yaourts
+  pâte à tarte
+Viande
+  bœuf
+  veau
+  porc
+  volailles
+  lardons
+  jambon
+  charcuterie
+Poisson
+  saumon fumé
+  bâtons de crabe
+  crevettes
+  moules
+Fruits/Légumes
+  pommes
+  poires
+  bananes
+  citron
+  salade
+  tomates
+  carottes
+  pommes de terre
+  oignons
+  ail/échalote
+Conserves
+  maïs
+  petits pois
+  haricots verts
+  sauce tomate
+  thon
+  terrines
+  olives
+  cornichons
+  plats cuisinés
+  fruits en sirop
+Épicerie
+  pâtes
+  riz
+  lentilles
+  purée
+  soupe
+  croutons
+  chapelure
+  bouillon cube
+  épices
+  poivre/sel
+  moutarde
+  mayonnaise
+  huile
+  vinaigre
+  farine
+  sucre
+  sucre vanillé
+  levure
+  pain
+  gâteaux apéro
+  chips
+  cacahuètes
+Petit-déj'/goûter
+  café
+  cacao
+  thé/tisane
+  céréales
+  confiture
+  miel
+  pâte à tartiner
+  brioche
+  biscottes
+  pain de mie
+  gâteaux
+  chocolat
+  chewing-gum
+  dosettes café
+  filtres à café
+Bébé
+  lait
+  biscuits
+  petits pots
+  compotes
+  couches
+Hygiène
+  savon
+  brosse à dents
+  dentifrice
+  coton
+  coton-tige
+  gel douche
+  déodorant
+  shampoing
+  démêlant
+  gel coiffant
+  rasoirs/lames
+  mousse à raser
+  après-rasage
+  crème
+  démaquillant
+  dissolvant
+  tampons
+  serviettes
+  cire dépilatoire
+  mouchoirs
+Pharmacie
+  alcool 90°
+  pansements
+  produit lentille
+  désinfectant
+Entretien
+  éponges
+  sac poubelle
+  film étirable
+  papier alu
+  essuie-tout
+  eau de javel
+  lingettes
+  anticalcaire
+  gel WC
+  produit sol
+  spray vitre
+  liquide vaisselle
+  lave-vaisselle
+  tablettes/sel
+  lessive
+  adoucissant
+  cirage
+  engrais
+  insecticide
+  papier toilette
+Animaux
+  croquette
+  boîtes
+  litière
+  jouet
+Surgelés
+  glaces
+  légumes
+  frites
+  pizza
+  poissons panés
+  steak hachés
+Boissons
+  eau
+  eau gazeuse
+  lait
+  jus de fruits
+  sodas
+  sirop
+  bières
+  vin
+  apéritifs
+Maison
+  serviettes
+  piles
+  ampoules
+  bougies
+  stylo/crayon
+  colle
+  ruban adhésif
+  enveloppes
+  timbres
+</textarea>
+<br><a download="export.html" onclick="html(this)" href="#">Export</a>
+<main class="export">Screen</main>
+</body>
