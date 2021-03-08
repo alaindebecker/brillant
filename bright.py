@@ -10,8 +10,8 @@ def head(title=''):
                 html, body { width: 100%; height: 100%; }
                 .row { display: flex; flex-direction: row; width: 100%; }
                 .row > * {flex: 1 1 0; }
-                .column { display: flex; flex-direction: column; height: 100%; }
-                .column { flex: 1 1 100% }
+                .column { display: flex; flex-direction: column; }
+                .column { flex: 1 1 0 }
 
                .well { background: whitesmoke; border: 1px solid lightgrey; border-radius: 4px; margin-bottom: 20px; padding: 9px}
 
